@@ -14,8 +14,8 @@ export function TrashContainerBox({container} : TrashContainerBoxProps) {
         <>
         <div>
             {container.name}
-            {container.fill_percentage}%
-            At {container.last_updated}
+            , {container.fill_percentage}%
+            {} {container.last_updated}
         </div>
         </>
     )
