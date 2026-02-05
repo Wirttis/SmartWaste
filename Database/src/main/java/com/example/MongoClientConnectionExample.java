@@ -1,4 +1,4 @@
-package com.gradle.SmartWaste;
+package com.example;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -37,4 +37,3 @@ public class MongoClientConnectionExample {
         }
     }
 }
-
