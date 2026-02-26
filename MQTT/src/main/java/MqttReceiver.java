@@ -1,6 +1,8 @@
 import org.eclipse.paho.client.mqttv3.*;
 
 import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 
 /**
  * MqttReceiver
@@ -23,7 +25,7 @@ public class MqttReceiver {
         String username = "Backend";
         String password = "e*tvY48I;M32m3)NNOq+uebvo6,k+f73";
 
-        try (MqttClient client = new MqttClient(broker, clientId)){
+        try (MqttAsyncClient client = new MqttAsyncClient(broker, clientId, new MemoryPersistence())) {
 
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
@@ -33,10 +35,11 @@ public class MqttReceiver {
             options.setAutomaticReconnect(true);
             options.setConnectionTimeout(10);
 
-            client.connect(options);
-            client.subscribe(topic);
+            IMqttToken token = client.connect(options);
+            token.waitForCompletion();
+            client.subscribe(topic,0).waitForCompletion();
 
-        client.setCallback(new MqttCallback() {
+            client.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable cause) {
                 System.out.println("Connection lost");
@@ -52,7 +55,6 @@ public class MqttReceiver {
         });
         }
         catch (MqttException e) {
-            System.err.println("MQTT Error");
             System.err.println("Reason Code: " + e.getReasonCode());
             System.err.println("Message: " + e.getMessage());
         }
