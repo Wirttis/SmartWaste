@@ -17,11 +17,24 @@ public class MqttReceiver {
     public static void main(String[] args) throws Exception {
 
         //TODO
-        String broker = "tcp://broker.hivemq.com:1883";
+        String broker = "ssl://8a5c3a59d6c946ffbe8bfaed051e8215.s1.eu.hivemq.cloud:8883";
         String clientId = "receiver-" + System.currentTimeMillis();
-        String topic = "test/yourname/mqttdemo";
+        String topic = "smartwaste/data";
+        String username = "Backend";
+        String password = "e*tvY48I;M32m3)NNOq+uebvo6,k+f73";
 
-        MqttClient client = new MqttClient(broker, clientId);
+        try (MqttClient client = new MqttClient(broker, clientId)){
+
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(true);
+            options.setUserName(username);
+            options.setPassword(password.toCharArray());
+
+            options.setAutomaticReconnect(true);
+            options.setConnectionTimeout(10);
+
+            client.connect(options);
+            client.subscribe(topic);
 
         client.setCallback(new MqttCallback() {
             @Override
@@ -37,10 +50,12 @@ public class MqttReceiver {
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {}
         });
-
-        client.connect();
-        client.subscribe(topic);
-
+        }
+        catch (MqttException e) {
+            System.err.println("MQTT Error");
+            System.err.println("Reason Code: " + e.getReasonCode());
+            System.err.println("Message: " + e.getMessage());
+        }
         System.out.println("Listening on topic: " + topic);
     }
 }
