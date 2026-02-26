@@ -2,5 +2,4 @@ rootProject.name = "SmartWaste"
 include 'MQTT'
 include 'Application'
 include 'Database'
-include 'Database'
 
