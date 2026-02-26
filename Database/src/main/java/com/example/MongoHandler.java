@@ -10,10 +10,10 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-public class MongoClientConnectionExample {
-    public static void main(String[] args) {
-        //TODO Need to change password and user to get access database.
-        String connectionString = "mongodb+srv://<db_username>:<db_password>@cluster0.ldvviwi.mongodb.net/?appName=Cluster0";
+public class MongoHandler {
+    public void connect() {
+        //Connection to DB
+        String connectionString = "mongodb+srv://SmartWasteUser:HsYSTT7CPFOURNH1@cluster0.ldvviwi.mongodb.net/?appName=Cluster0";
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
@@ -28,7 +28,7 @@ public class MongoClientConnectionExample {
         try (MongoClient mongoClient = MongoClients.create(settings)) {
             try {
                 // Send a ping to confirm a successful connection
-                MongoDatabase database = mongoClient.getDatabase("admin");
+                MongoDatabase database = mongoClient.getDatabase("SmartWaste_DB");
                 database.runCommand(new Document("ping", 1));
                 System.out.println("Pinged your deployment. You successfully connected to MongoDB!");
             } catch (MongoException e) {
