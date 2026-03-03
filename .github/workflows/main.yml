@@ -27,20 +27,20 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-          cache-dependency-path: "(main)/app/package-lock.json"
+          cache-dependency-path: "/app/package-lock.json"
 
       - name: Install dependencies
-        working-directory: "(main)/app"
+        working-directory: "/app"
         run: npm ci
 
       - name: Build React app
-        working-directory: "(main)/app"
+        working-directory: "/app"
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "(main)/app/build"
+          path: "/app/dist"
 
   deploy:
     environment:
