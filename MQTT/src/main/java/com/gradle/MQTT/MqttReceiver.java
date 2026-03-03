@@ -21,10 +21,10 @@ public class MqttReceiver {
 
     private final MqttAsyncClient client;
     private ArrayList<String> topics = new ArrayList<>();
-    private final MessageHandler messageHandler;
+    private MessageInterface messageHandler = null;
 
-    public MqttReceiver(MessageHandler messageHandler) throws MqttException {
-        this.messageHandler = new MessageHandler();
+    public MqttReceiver(MessageInterface messageHandler) throws MqttException {
+        this.messageHandler = messageHandler;
         String clientId = "receiver-" + System.currentTimeMillis();
         String broker = "ssl://8a5c3a59d6c946ffbe8bfaed051e8215.s1.eu.hivemq.cloud:8883";
         client = new MqttAsyncClient(broker, clientId, new MemoryPersistence());
@@ -65,9 +65,8 @@ public class MqttReceiver {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) {
-                String payload = new String(message.getPayload());
-
-                messageHandler.handleMessage(topic, payload);
+                String messageString = new String(message.getPayload());
+                messageHandler.handleMessage(topic, messageString);
             }
 
             @Override
