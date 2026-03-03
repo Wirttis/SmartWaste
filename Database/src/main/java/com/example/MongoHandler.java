@@ -11,6 +11,8 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 public class MongoHandler {
+    MongoDatabase database;
+
     public void connect() {
         //Connection to DB
         String connectionString = "mongodb+srv://SmartWasteUser:HsYSTT7CPFOURNH1@cluster0.ldvviwi.mongodb.net/?appName=Cluster0";
@@ -25,15 +27,17 @@ public class MongoHandler {
                 .build();
 
         // Create a new client and connect to the server
-        try (MongoClient mongoClient = MongoClients.create(settings)) {
-            try {
-                // Send a ping to confirm a successful connection
-                MongoDatabase database = mongoClient.getDatabase("SmartWaste_DB");
-                database.runCommand(new Document("ping", 1));
-                System.out.println("Pinged your deployment. You successfully connected to MongoDB!");
-            } catch (MongoException e) {
-                e.printStackTrace();
-            }
-        }
+        MongoClient mongoClient = MongoClients.create(settings);
+
+        // Send a ping to confirm a successful connection
+        database = mongoClient.getDatabase("SmartWaste_DB");
+
+        database.runCommand(new Document("ping", 1));
+        System.out.println("Pinged your deployment. You successfully connected to MongoDB!");
+
+
+    }
+    public MongoDatabase getDatabase() {
+        return database;
     }
 }

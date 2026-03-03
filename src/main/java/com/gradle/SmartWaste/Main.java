@@ -7,9 +7,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class Main {
     public static void main(String[] args) throws MqttException {
         MongoHandler mongoHandler = new MongoHandler();
-        MessageHandler messageHandler = new MessageHandler();
+        mongoHandler.connect();
+        MessageHandler messageHandler = new MessageHandler(mongoHandler);
         MqttReceiver mqttReceiver = new MqttReceiver(messageHandler);
         mqttReceiver.start();
-        mongoHandler.connect();
     }
 }
