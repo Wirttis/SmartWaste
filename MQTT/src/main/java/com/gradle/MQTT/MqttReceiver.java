@@ -35,8 +35,8 @@ public class MqttReceiver {
         setCallback();
     }
     private MqttConnectOptions createConnectOptions() {
-        String username = "Backend";
-        String password = "e*tvY48I;M32m3)NNOq+uebvo6,k+f73";
+        String username = "";
+        String password = "";
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setUserName(username);
