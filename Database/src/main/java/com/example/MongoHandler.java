@@ -15,7 +15,8 @@ public class MongoHandler {
 
     public void connect() {
         //Connection to DB
-        String connectionString = "";
+        String connectionString = System.getenv("DATABASE_PASSWORD");
+
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
