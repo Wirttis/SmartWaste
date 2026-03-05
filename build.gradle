@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id("org.springframework.boot") version "4.1.0-M2"
 }
 
 group = 'com.example'
@@ -16,6 +17,8 @@ dependencies {
     implementation project(":MQTT")
     implementation project(":Database")
     implementation 'org.json:json:20231013'
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.0-M2"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
 }
 
 test {

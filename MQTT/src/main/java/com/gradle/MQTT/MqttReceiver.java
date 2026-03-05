@@ -21,7 +21,7 @@ public class MqttReceiver {
 
     private final MqttAsyncClient client;
     private ArrayList<String> topics = new ArrayList<>();
-    private MessageInterface messageHandler = null;
+    private final MessageInterface messageHandler;
 
     public MqttReceiver(MessageInterface messageHandler) throws MqttException {
         this.messageHandler = messageHandler;
@@ -35,8 +35,8 @@ public class MqttReceiver {
         setCallback();
     }
     private MqttConnectOptions createConnectOptions() {
-        String username = "";
-        String password = "";
+        String username = "DataListener";
+        String password = "R%6gyV21o6!&@stG7D'x5z10i;Tq65G1";
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setUserName(username);
