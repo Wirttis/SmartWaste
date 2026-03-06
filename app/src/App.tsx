@@ -1,76 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrashContainerCard } from "./components/TrashContainerCard";
 import { StatCard } from "./components/StatCard";
 import type { ContainerFilter, ContainerSort, TrashContainer } from "./types/trash";
-
+import {getContainers} from "./api/ContainerApi";
 // Mock data for trash containers
-const mockContainers: TrashContainer[] = [
-	{
-		id: "1",
-		name: "Container A-101",
-		location: "Main Street & 5th Ave",
-		fillPercentage: 85,
-		lastUpdated: "2 hours ago",
-		type: "general",
-	},
-	{
-		id: "2",
-		name: "Container A-102",
-		location: "Park Plaza",
-		fillPercentage: 45,
-		lastUpdated: "1 hour ago",
-		type: "recycling",
-	},
-	{
-		id: "3",
-		name: "Container B-201",
-		location: "Downtown Center",
-		fillPercentage: 92,
-		lastUpdated: "30 minutes ago",
-		type: "general",
-	},
-	{
-		id: "4",
-		name: "Container B-202",
-		location: "City Hall",
-		fillPercentage: 38,
-		lastUpdated: "3 hours ago",
-		type: "organic",
-	},
-	{
-		id: "5",
-		name: "Container C-301",
-		location: "Riverside Park",
-		fillPercentage: 67,
-		lastUpdated: "1 hour ago",
-		type: "recycling",
-	},
-	{
-		id: "6",
-		name: "Container C-302",
-		location: "Shopping District",
-		fillPercentage: 78,
-		lastUpdated: "45 minutes ago",
-		type: "general",
-	},
-	{
-		id: "7",
-		name: "Container D-401",
-		location: "West End Station",
-		fillPercentage: 23,
-		lastUpdated: "2 hours ago",
-		type: "general",
-	},
-	{
-		id: "8",
-		name: "Container D-402",
-		location: "Community Center",
-		fillPercentage: 55,
-		lastUpdated: "1 hour ago",
-		type: "organic",
-	},
-];
 
+const [containers, setContainers] = useState<TrashContainer[]>([]);
+
+useEffect(() => {
+	const loadContainers = async () => {
+		try {
+			const apiData = await getContainers();
+
+			const mapped: TrashContainer[] = apiData.map((c: any) => ({
+				id: String(c.bin_id),
+				name: `Container ${c.bin_id}`,
+				location: `Bin Location ${c.bin_id}`,
+				fillPercentage: c.fill_level,
+				lastUpdated: new Date(c.created_at).toLocaleString(),
+				type: "general",
+			}));
+
+			setContainers(mapped);
+		} catch (error) {
+			console.error("Failed to load containers", error);
+		}
+	};
+
+	loadContainers();
+
+	const interval = setInterval(loadContainers, 5000);
+
+	return () => clearInterval(interval);
+}, []);
 export default function App() {
 	const [filterType, setFilterType] = useState<ContainerFilter>("all");
 	const [sortBy, setSortBy] = useState<ContainerSort>("fill-desc");
@@ -103,20 +65,20 @@ export default function App() {
 	};
 
 	// Calculate statistics
-	const totalContainers = mockContainers.length;
-	const criticalContainers = mockContainers.filter(
+	const totalContainers = containers.length;
+	const criticalContainers = containers.filter(
 		(c) => c.fillPercentage >= 80,
 	).length;
 	const averageFill = Math.round(
-		mockContainers.reduce((sum, c) => sum + c.fillPercentage, 0) /
+		containers.reduce((sum, c) => sum + c.fillPercentage, 0) /
 			totalContainers,
 	);
-	const needsCollection = mockContainers.filter(
+	const needsCollection = containers.filter(
 		(c) => c.fillPercentage >= 60,
 	).length;
 
 	// Filter containers
-	const filteredContainers = mockContainers.filter((container) => {
+	const filteredContainers = containers.filter((container) => {
 		if (filterType === "all") return true;
 		if (filterType === "critical") return container.fillPercentage >= 80;
 		if (filterType === "warning")
