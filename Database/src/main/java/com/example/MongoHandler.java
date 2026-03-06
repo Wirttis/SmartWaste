@@ -15,7 +15,8 @@ public class MongoHandler {
 
     public void connect() {
         //Connection to DB
-        String connectionString = "mongodb+srv://SmartWasteUser:HsYSTT7CPFOURNH1@cluster0.ldvviwi.mongodb.net/?appName=Cluster0";
+        String connectionString = System.getenv("DATABASE_PASSWORD");
+
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)

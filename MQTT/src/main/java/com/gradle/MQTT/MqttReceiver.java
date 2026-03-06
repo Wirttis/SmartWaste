@@ -21,12 +21,12 @@ public class MqttReceiver {
 
     private final MqttAsyncClient client;
     private ArrayList<String> topics = new ArrayList<>();
-    private MessageInterface messageHandler = null;
+    private final MessageInterface messageHandler;
 
     public MqttReceiver(MessageInterface messageHandler) throws MqttException {
         this.messageHandler = messageHandler;
         String clientId = "receiver-" + System.currentTimeMillis();
-        String broker = "ssl://8a5c3a59d6c946ffbe8bfaed051e8215.s1.eu.hivemq.cloud:8883";
+        String broker = System.getenv("MQTT_URL");
         client = new MqttAsyncClient(broker, clientId, new MemoryPersistence());
     }
     public void start() throws MqttException {
@@ -35,8 +35,8 @@ public class MqttReceiver {
         setCallback();
     }
     private MqttConnectOptions createConnectOptions() {
-        String username = "";
-        String password = "";
+        String username = System.getenv("MQTT_USER");
+        String password = System.getenv("MQTT_PASSWORD");
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setUserName(username);
