@@ -19,7 +19,7 @@ public class MessageHandler implements MessageInterface {
     public void handleMessage(String topic, String message) {
         System.out.println("Received Message: " + message);
         Document document = Document.parse(message);
-        document.append("created_at", ZonedDateTime.now(ZoneId.of("UTC+2")));
+        document.append("created_at", LocalDateTime.now(ZoneId.of("UTC+2")));
         MongoCollection<Document> collection = database.getCollection("Measurements");
         try {
             InsertOneResult result = collection.insertOne(document);
