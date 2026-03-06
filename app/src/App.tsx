@@ -5,38 +5,38 @@ import type { ContainerFilter, ContainerSort, TrashContainer } from "./types/tra
 import {getContainers} from "./api/ContainerApi";
 // Mock data for trash containers
 
-const [containers, setContainers] = useState<TrashContainer[]>([]);
-
-useEffect(() => {
-	const loadContainers = async () => {
-		try {
-			const apiData = await getContainers();
-
-			const mapped: TrashContainer[] = apiData.map((c: any) => ({
-				id: String(c.bin_id),
-				name: `Container ${c.bin_id}`,
-				location: `Bin Location ${c.bin_id}`,
-				fillPercentage: c.fill_level,
-				lastUpdated: new Date(c.created_at).toLocaleString(),
-				type: "general",
-			}));
-
-			setContainers(mapped);
-		} catch (error) {
-			console.error("Failed to load containers", error);
-		}
-	};
-
-	loadContainers();
-
-	const interval = setInterval(loadContainers, 5000);
-
-	return () => clearInterval(interval);
-}, []);
 export default function App() {
 	const [filterType, setFilterType] = useState<ContainerFilter>("all");
 	const [sortBy, setSortBy] = useState<ContainerSort>("fill-desc");
 
+	const [containers, setContainers] = useState<TrashContainer[]>([]);
+
+	useEffect(() => {
+		const loadContainers = async () => {
+			try {
+				const apiData = await getContainers();
+
+				const mapped: TrashContainer[] = apiData.map((c: any) => ({
+					id: String(c.id),
+					name: `Container ${c.id}`,
+					location: `Bin Location ${c.id}`,
+					fillPercentage: c.fillPercentage,
+					lastUpdated: c.fillPercentage,
+					type: c.TrashType,
+				}));
+
+				setContainers(mapped);
+			} catch (error) {
+				console.error("Failed to load containers", error);
+			}
+		};
+
+		loadContainers();
+
+		const interval = setInterval(loadContainers, 5000);
+
+		return () => clearInterval(interval);
+	}, []);
 	const filterValues: readonly ContainerFilter[] = [
 		"all",
 		"critical",
