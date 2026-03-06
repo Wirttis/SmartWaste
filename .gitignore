@@ -5,6 +5,8 @@ out/
 .kotlin
 .gradle
 .idea
+/build/*
+!/build/libs
 
 ### Eclipse ###
 .apt_generated
