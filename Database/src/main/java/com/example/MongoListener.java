@@ -5,9 +5,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
+// TODO maybe rename function?
 public class MongoListener {
 
     // database and collections
@@ -59,5 +64,23 @@ public class MongoListener {
         });
         // returns the arraylist
         return containerData;
+    }
+
+    // method to add document to the database from frontend
+    public void addContainerMeasurement(Document document){
+        try {
+            // add data to correct form
+            double fill = Double.parseDouble(document.get("fillPercentage").toString());
+            Document measurementDocument = new Document();
+            measurementDocument.append("bin_id",Integer.parseInt(document.get("id").toString()))
+                    .append("weight", (fill*0.01)*500)
+                    .append("fill_level",document.get("fillPercentage"))
+                    .append("created_at", LocalDateTime.now(ZoneId.of("UTC+2")));
+            // add
+            InsertOneResult result = collectionM.insertOne(measurementDocument);
+            System.out.println("Inserted document id - insert many: " + result.getInsertedId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
