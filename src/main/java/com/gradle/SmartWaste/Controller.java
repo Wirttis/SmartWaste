@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// setting up API, needing many improvements
 @RestController
 @RequestMapping("/containers")
 public class Controller {
     @CrossOrigin
     @GetMapping("/api/v1/test")
     public List<Document> test(){
+        // GET returns latest container measurements
         MongoListener mongoListener = new MongoListener(Main.mongoHandler);
         return  mongoListener.getLatestContainers();
     }
