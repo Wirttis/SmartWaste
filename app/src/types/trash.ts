@@ -5,7 +5,7 @@ export interface TrashContainer {
 	name: string;
 	location: string;
 	fillPercentage: number;
-	lastUpdated: string;
+	lastUpdated: Date;
 	type: TrashType;
 }
 

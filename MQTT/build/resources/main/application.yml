@@ -1,0 +1,6 @@
+  spring:
+    datasource:
+      url: ${MQTT_URL}
+      username: ${MQTT_USER}
+      password: ${MQTT_PASSWORD}
+      connectionString: ${DATABASE_PASSWORD}
