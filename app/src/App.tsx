@@ -23,9 +23,9 @@ export default function App() {
 				const mapped: TrashContainer[] = apiData.map(
 					(c: TrashContainer) => ({
 						id: c.id,
-					name: `Container ${c.id}`,
-					location: `Bin Location ${c.id}`,
-					fillPercentage: c.fillPercentage,
+						name: `Container ${c.id}`,
+						location: `Bin Location ${c.id}`,
+						fillPercentage: c.fillPercentage,
 						lastUpdated: c.lastUpdated,
 						type: c.type,
 					}),
@@ -133,10 +133,7 @@ export default function App() {
 						value={criticalContainers}
 						subtitle="≥ 80% full"
 					/>
-					<StatCard
-						title="Average Fill"
-						value={`${averageFill}%`}
-					/>
+					<StatCard title="Average Fill" value={`${averageFill}%`} />
 					<StatCard
 						title="Needs Collection"
 						value={needsCollection}
@@ -147,7 +144,11 @@ export default function App() {
 				{/* Filters and Controls */}
 				<div className="panel controls-panel">
 					<div className="controls-row">
-						<div className="filter-tabs" role="tablist" aria-label="Fill level filters">
+						<div
+							className="filter-tabs"
+							role="tablist"
+							aria-label="Fill level filters"
+						>
 							{[
 								{ value: "all", label: "All" },
 								{ value: "critical", label: "Critical" },
@@ -158,7 +159,9 @@ export default function App() {
 									key={tab.value}
 									type="button"
 									className={`filter-tab ${filterType === tab.value ? "active" : ""}`}
-									onClick={() => handleFilterChange(tab.value)}
+									onClick={() =>
+										handleFilterChange(tab.value)
+									}
 								>
 									{tab.label}
 								</button>
@@ -169,7 +172,9 @@ export default function App() {
 							<select
 								className="control-select"
 								value={filterType}
-								onChange={(event) => handleFilterChange(event.target.value)}
+								onChange={(event) =>
+									handleFilterChange(event.target.value)
+								}
 							>
 								<option value="all">All Types</option>
 								<option value="general">General</option>
@@ -180,10 +185,16 @@ export default function App() {
 							<select
 								className="control-select"
 								value={sortBy}
-								onChange={(event) => handleSortChange(event.target.value)}
+								onChange={(event) =>
+									handleSortChange(event.target.value)
+								}
 							>
-								<option value="fill-desc">Fill % (High to Low)</option>
-								<option value="fill-asc">Fill % (Low to High)</option>
+								<option value="fill-desc">
+									Fill % (High to Low)
+								</option>
+								<option value="fill-asc">
+									Fill % (Low to High)
+								</option>
 								<option value="name">Name (A-Z)</option>
 							</select>
 						</div>
@@ -202,9 +213,7 @@ export default function App() {
 
 				{sortedContainers.length === 0 && (
 					<div className="empty-state">
-						<p>
-							No containers match the selected filters
-						</p>
+						<p>No containers match the selected filters</p>
 					</div>
 				)}
 			</div>
