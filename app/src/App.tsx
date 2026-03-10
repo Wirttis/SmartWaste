@@ -14,7 +14,7 @@ export default function App() {
 	const [sortBy, setSortBy] = useState<ContainerSort>("fill-desc");
 
 	const [containers, setContainers] = useState<TrashContainer[]>([]);
-
+	
 	const loadContainers = async () => {
 		try {
 			const apiData = await getContainers();
@@ -29,7 +29,7 @@ export default function App() {
 					type: c.type,
 				}),
 			);
-
+			console.log("Mapped: ", mapped)
 			setContainers(mapped);
 		} catch (error) {
 			console.error("Failed to load containers", error);
