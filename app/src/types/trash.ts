@@ -9,6 +9,11 @@ export interface TrashContainer {
 	type: TrashType;
 }
 
-export type ContainerFilter = TrashType | "all" | "critical" | "warning" | "normal";
+export type ContainerFilter =
+	| TrashType
+	| "all"
+	| "critical"
+	| "warning"
+	| "normal";
 
 export type ContainerSort = "fill-desc" | "fill-asc" | "name";
