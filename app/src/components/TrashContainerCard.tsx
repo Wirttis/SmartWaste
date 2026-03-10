@@ -65,7 +65,7 @@ export function TrashContainerCard({ container }: TrashContainerCardProps) {
       </div>
 
       <div className="container-footer">
-        Last updated: {container.lastUpdated}
+        Last updated: {container.lastUpdated.toLocaleString()}
       </div>
     </div>
   );
