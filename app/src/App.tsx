@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { TrashContainerCard } from "./components/TrashContainerCard";
 import { StatCard } from "./components/StatCard";
-import type { ContainerFilter, ContainerSort, TrashContainer } from "./types/trash";
-import {getContainers} from "./api/ContainerApi";
+import type {
+	ContainerFilter,
+	ContainerSort,
+	TrashContainer,
+} from "./types/trash";
+import { getContainers } from "./api/ContainerApi";
 // Mock data for trash containers
 
 export default function App() {
