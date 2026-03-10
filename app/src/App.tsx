@@ -15,7 +15,7 @@ export default function App() {
 
 	const [containers, setContainers] = useState<TrashContainer[]>([]);
 
-	useEffect(() => {
+
 		const loadContainers = async () => {
 			try {
 				const apiData = await getContainers();
@@ -37,12 +37,10 @@ export default function App() {
 			}
 		};
 
-		loadContainers();
+		useEffect(()=> {loadContainers();},[])
 
-		const interval = setInterval(loadContainers, 5000);
 
-		return () => clearInterval(interval);
-	}, []);
+
 	const filterValues: readonly ContainerFilter[] = [
 		"all",
 		"critical",
@@ -150,6 +148,7 @@ export default function App() {
 							aria-label="Fill level filters"
 						>
 							{[
+								{ value: "update", label: "Update"},
 								{ value: "all", label: "All" },
 								{ value: "critical", label: "Critical" },
 								{ value: "warning", label: "Warning" },
@@ -159,9 +158,14 @@ export default function App() {
 									key={tab.value}
 									type="button"
 									className={`filter-tab ${filterType === tab.value ? "active" : ""}`}
-									onClick={() =>
+									onClick={() =>{
+										if(tab.value === "update"){
+										loadContainers();
+									}else{
+
 										handleFilterChange(tab.value)
 									}
+									}}
 								>
 									{tab.label}
 								</button>
