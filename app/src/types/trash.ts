@@ -5,10 +5,15 @@ export interface TrashContainer {
 	name: string;
 	location: string;
 	fillPercentage: number;
-	lastUpdated: string;
+	lastUpdated: Date;
 	type: TrashType;
 }
 
-export type ContainerFilter = TrashType | "all" | "critical" | "warning" | "normal";
+export type ContainerFilter =
+	| TrashType
+	| "all"
+	| "critical"
+	| "warning"
+	| "normal";
 
 export type ContainerSort = "fill-desc" | "fill-asc" | "name";

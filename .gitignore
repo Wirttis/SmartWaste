@@ -4,6 +4,12 @@ out/
 !**/src/test/**/out/
 .kotlin
 .gradle
+.idea
+/build/*
+!/build/libs
+/MQTT/build/
+/Database/build/
+
 
 ### Eclipse ###
 .apt_generated
