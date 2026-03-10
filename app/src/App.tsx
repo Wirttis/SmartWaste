@@ -23,8 +23,8 @@ export default function App() {
 				const mapped: TrashContainer[] = apiData.map(
 					(c: TrashContainer) => ({
 						id: c.id,
-						name: `Container ${c.id}`,
-						location: `Bin Location ${c.id}`,
+						name: c.name,
+						location: c.location,
 						fillPercentage: c.fillPercentage,
 						lastUpdated: c.lastUpdated,
 						type: c.type,
