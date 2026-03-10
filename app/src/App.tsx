@@ -26,9 +26,10 @@ export default function App() {
 					name: `Container ${c.id}`,
 					location: `Bin Location ${c.id}`,
 					fillPercentage: c.fillPercentage,
-					lastUpdated: c.fillPercentage,
-					type: c.TrashType,
-				}));
+						lastUpdated: c.lastUpdated,
+						type: c.type,
+					}),
+				);
 
 				setContainers(mapped);
 			} catch (error) {
