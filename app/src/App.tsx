@@ -20,8 +20,9 @@ export default function App() {
 			try {
 				const apiData = await getContainers();
 
-				const mapped: TrashContainer[] = apiData.map((c: any) => ({
-					id: String(c.id),
+				const mapped: TrashContainer[] = apiData.map(
+					(c: TrashContainer) => ({
+						id: c.id,
 					name: `Container ${c.id}`,
 					location: `Bin Location ${c.id}`,
 					fillPercentage: c.fillPercentage,
