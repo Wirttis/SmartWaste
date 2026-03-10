@@ -15,34 +15,31 @@ export default function App() {
 
 	const [containers, setContainers] = useState<TrashContainer[]>([]);
 
+	const loadContainers = async () => {
+		try {
+			const apiData = await getContainers();
+
+			const mapped: TrashContainer[] = apiData.map(
+				(c: TrashContainer) => ({
+					id: c.id,
+					name: c.name,
+					location: c.location,
+					fillPercentage: c.fillPercentage,
+					lastUpdated: c.lastUpdated,
+					type: c.type,
+				}),
+			);
+
+			setContainers(mapped);
+		} catch (error) {
+			console.error("Failed to load containers", error);
+		}
+	};
+
 	useEffect(() => {
-		const loadContainers = async () => {
-			try {
-				const apiData = await getContainers();
-
-				const mapped: TrashContainer[] = apiData.map(
-					(c: TrashContainer) => ({
-						id: c.id,
-						name: c.name,
-						location: c.location,
-						fillPercentage: c.fillPercentage,
-						lastUpdated: c.lastUpdated,
-						type: c.type,
-					}),
-				);
-
-				setContainers(mapped);
-			} catch (error) {
-				console.error("Failed to load containers", error);
-			}
-		};
-
 		loadContainers();
-
-		const interval = setInterval(loadContainers, 5000);
-
-		return () => clearInterval(interval);
 	}, []);
+
 	const filterValues: readonly ContainerFilter[] = [
 		"all",
 		"critical",
@@ -150,6 +147,7 @@ export default function App() {
 							aria-label="Fill level filters"
 						>
 							{[
+								{ value: "update", label: "Update" },
 								{ value: "all", label: "All" },
 								{ value: "critical", label: "Critical" },
 								{ value: "warning", label: "Warning" },
@@ -159,9 +157,13 @@ export default function App() {
 									key={tab.value}
 									type="button"
 									className={`filter-tab ${filterType === tab.value ? "active" : ""}`}
-									onClick={() =>
-										handleFilterChange(tab.value)
-									}
+									onClick={() => {
+										if (tab.value === "update") {
+											loadContainers();
+										} else {
+											handleFilterChange(tab.value);
+										}
+									}}
 								>
 									{tab.label}
 								</button>
