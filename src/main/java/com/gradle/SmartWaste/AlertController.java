@@ -5,6 +5,7 @@ import com.gradle.MQTT.MessageInterface;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AlertController implements MessageInterface {
@@ -13,6 +14,7 @@ public class AlertController implements MessageInterface {
     MongoListener mongoListener = new MongoListener(Main.mongoHandler);
     public AlertController() {
         containers = mongoListener.getContainers();
+        alertFlags = new HashMap<>();
         for (Document container : containers) alertFlags.put(container, false);
     }
 
