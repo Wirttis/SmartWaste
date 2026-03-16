@@ -47,7 +47,10 @@ public class MongoListener {
         });
         return containerData;
     }
-    public Document getContainerById(String id) {
+    public Document getContainerById(int id) {
         return collectionC.find(Filters.eq("location_id",id)).first();
+    }
+    public Document getLocationById(int id) {
+        return collectionL.find(Filters.eq("_id",id)).first();
     }
 }
