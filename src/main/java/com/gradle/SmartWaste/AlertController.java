@@ -10,37 +10,45 @@ import java.util.Map;
 
 public class AlertController implements MessageInterface {
     ArrayList<Document> containers;
-    Map<Document, Boolean> alertFlags ;
+    Map<Document, Boolean> alertFlags;
     MongoListener mongoListener = new MongoListener(Main.mongoHandler);
+
     public AlertController() {
         containers = mongoListener.getContainers();
         alertFlags = new HashMap<>();
         for (Document container : containers) alertFlags.put(container, false);
     }
 
-    public void doAlert(Document document){
-        //
+    public void doAlert(Document location, Document measurement) {
+        EmailSender.sendEmail("", "Container Alert", "This is a test: " + location.get("name") + "   fill: " + measurement.get("fill_level"));
     }
-    public boolean getAlertFlag(Document document){
+
+    public boolean getAlertFlag(Document document) {
         return alertFlags.get(document);
     }
-    public void changeAlertFlag(Document document){
-        alertFlags.put(document,!alertFlags.get(document));
+
+    public void changeAlertFlag(Document document) {
+        alertFlags.put(document, !alertFlags.get(document));
     }
 
     @Override
     public void handleMessage(String topic, String message) {
-        Document document = Document.parse(message);
-        Document container = mongoListener.getContainerById(document.getString("bin_id"));
-        float weight = (float) document.get("weight");
-        float threshhold = (float) container.get("alert_threshold_kg");
-        if(getAlertFlag(container)&& weight >= threshhold) {
-            doAlert(container);
-        } else if (getAlertFlag(container)) {
-            changeAlertFlag(container);
-        } else if (weight >= threshhold) {
-            doAlert(container);
-            changeAlertFlag(container);
+        try {
+            Document document = Document.parse(message);
+            Document container = mongoListener.getContainerById(document.getInteger("bin_id"));
+            Document location = mongoListener.getLocationById(document.getInteger("bin_id"));
+            double weight = Double.parseDouble(document.get("weight").toString());
+            double threshhold = Double.parseDouble(container.get("alert_threshold_kg").toString());
+            if (getAlertFlag(container) && weight >= threshhold) {
+                doAlert(location, document);
+            } else if (getAlertFlag(container)) {
+                changeAlertFlag(container);
+            } else if (weight >= threshhold) {
+                doAlert(location, document);
+                changeAlertFlag(container);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
