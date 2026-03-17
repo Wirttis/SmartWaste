@@ -13,12 +13,16 @@ public class MongoListener {
     MongoCollection<Document> collectionM;
     MongoCollection<Document> collectionC;
     MongoCollection<Document> collectionL;
+    MongoCollection<Document> collectionR;
+    MongoCollection<Document> collectionS;
 
     public MongoListener(MongoHandler mongoHandler) {
         database = mongoHandler.getDatabase();
         collectionM = database.getCollection("Measurements");
         collectionC = database.getCollection("Containers");
         collectionL = database.getCollection("Locations");
+        collectionS = database.getCollection("Subscriptions");
+        collectionR = database.getCollection("Recipients");
     }
 
     public ArrayList<Document> getContainers() {
@@ -52,5 +56,11 @@ public class MongoListener {
     }
     public Document getLocationById(int id) {
         return collectionL.find(Filters.eq("_id",id)).first();
+    }
+    public Document getContainerRecipient(Document container) {
+        Document subsciptions = collectionS.find(Filters.eq("container_id",container.get("_id"))).first();
+        if(subsciptions!=null) {
+            return collectionR.find(Filters.eq("_id", subsciptions.get("recipient_id"))).first();
+        } else return null;
     }
 }
