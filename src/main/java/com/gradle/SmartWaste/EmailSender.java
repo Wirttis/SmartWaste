@@ -29,9 +29,7 @@ public class EmailSender {
     public static void sendEmail(String toEmail, String subject, String messageText) {
 
         try {
-            System.out.println("Sending email to: " + toEmail);
             Session session = createSession();
-            System.out.println("test success");
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(FROM_EMAIL));
             message.setRecipients(Message.RecipientType.TO,
