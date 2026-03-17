@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TrashContainerCard } from "./components/TrashContainerCard";
 import { StatCard } from "./components/StatCard";
 
@@ -16,7 +16,7 @@ export default function App() {
 
 	const [containers, setContainers] = useState<TrashContainer[]>([]);
 
-	const loadContainers = async () => {
+	const loadContainers = useCallback(async () => {
 		try {
 			const apiData = await getContainers();
 
@@ -34,7 +34,7 @@ export default function App() {
 		} catch (error) {
 			console.error("Failed to load containers", error);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		// Refresh on mount, then every 10 seconds
@@ -52,7 +52,7 @@ export default function App() {
 		}, 10000);
 
 		return () => clearInterval(interval);
-	}, []);
+	}, [loadContainers]);
 
 	const filterValues: readonly ContainerFilter[] = [
 		"all",
