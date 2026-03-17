@@ -69,9 +69,8 @@ public class MqttReceiver {
             public void messageArrived(String topic, MqttMessage message) {
                 String messageString = new String(message.getPayload());
                 messageHandler.handleMessage(topic, messageString);
-                System.out.println("Message arrived");
                 alertController.handleMessage(topic, messageString);
-                System.out.println("Message arrived2");
+
             }
 
             @Override
