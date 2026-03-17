@@ -19,8 +19,13 @@ public class AlertController implements MessageInterface {
         for (Document container : containers) alertFlags.put(container, false);
     }
 
-    public void doAlert(Document location, Document measurement) {
-        EmailSender.sendEmail("", "Container Alert", "This is a test: " + location.get("name") + "   fill: " + measurement.get("fill_level"));
+    public void doAlert(Document container, Document measurement) {
+
+        Document recipient = mongoListener.getContainerRecipient(container);
+        Document location = mongoListener.getLocationById(container.getInteger("location_id"));
+        // TODO create message
+        String message = "";
+        EmailSender.sendEmail(recipient.getString("email"), "Tyhjennystilaus", "This is a test: " + location.get("site_name") + "   fill: " + measurement.get("fill_level"));
     }
 
     public boolean getAlertFlag(Document document) {
@@ -36,17 +41,16 @@ public class AlertController implements MessageInterface {
         try {
             Document document = Document.parse(message);
             Document container = mongoListener.getContainerById(document.getInteger("bin_id"));
-            Document location = mongoListener.getLocationById(document.getInteger("bin_id"));
             double weight = Double.parseDouble(document.get("weight").toString());
             double threshhold = Double.parseDouble(container.get("alert_threshold_kg").toString());
-            if (getAlertFlag(container) && weight >= threshhold) {
-                doAlert(location, document);
-            } else if (getAlertFlag(container)) {
+
+            if (getAlertFlag(container)&& weight <= threshhold) {
                 changeAlertFlag(container);
-            } else if (weight >= threshhold) {
-                doAlert(location, document);
+            } else if (weight >= threshhold && !getAlertFlag(container)) {
+                doAlert(container, document);
                 changeAlertFlag(container);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
