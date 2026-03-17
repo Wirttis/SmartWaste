@@ -40,7 +40,7 @@ public class MongoListener {
                     .append("name", document.get("name").toString())
                     .append("location", locationData.get("address").toString())
                     .append("fillPercentage", measurementDocument.get("fill_level"))
-                    .append("lastUpdated", measurementDocument.get("created_at").toString());
+                    .append("lastUpdated", measurementDocument.get("created_at"));
                 containerData.add(doc);
             }
             else  containerData.add(null);
