@@ -4,6 +4,8 @@ import com.example.MongoListener;
 import com.gradle.MQTT.MessageInterface;
 import org.bson.Document;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,9 @@ public class AlertController implements MessageInterface {
         Document recipient = mongoListener.getContainerRecipient(container);
         Document location = mongoListener.getLocationById(container.getInteger("location_id"));
         // TODO create message
-        String message = "";
-        EmailSender.sendEmail(recipient.getString("email"), "Tyhjennystilaus", "This is a test: " + location.get("site_name") + "   fill: " + measurement.get("fill_level"));
+        String message = "Jätesäiliö paikassa " + location.get("site_name")+ "vaatii tyhjennystä.\nTäyttösaste = " + measurement.get("fill_level") +
+                "\n aikaan" + LocalDateTime.now(ZoneId.of("UTC+2"));
+        EmailSender.sendEmail(recipient.getString("email"), "Tyhjennystilaus", message);
     }
 
     public boolean getAlertFlag(Document document) {
