@@ -22,9 +22,11 @@ public class MqttReceiver {
     private final MqttAsyncClient client;
     private ArrayList<String> topics = new ArrayList<>();
     private final MessageInterface messageHandler;
+    private final MessageInterface alertController;
 
-    public MqttReceiver(MessageInterface messageHandler) throws MqttException {
+    public MqttReceiver(MessageInterface messageHandler, MessageInterface alertController) throws MqttException {
         this.messageHandler = messageHandler;
+        this.alertController = alertController;
         String clientId = "receiver-" + System.currentTimeMillis();
         String broker = System.getenv("MQTT_URL");
         client = new MqttAsyncClient(broker, clientId, new MemoryPersistence());
@@ -67,6 +69,8 @@ public class MqttReceiver {
             public void messageArrived(String topic, MqttMessage message) {
                 String messageString = new String(message.getPayload());
                 messageHandler.handleMessage(topic, messageString);
+                alertController.handleMessage(topic, messageString);
+
             }
 
             @Override

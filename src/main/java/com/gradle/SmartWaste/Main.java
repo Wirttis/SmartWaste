@@ -14,8 +14,9 @@ public class Main {
         SpringApplication.run(Main.class, args);
         mongoHandler = new MongoHandler();
         mongoHandler.connect();
+        AlertController alertController = new AlertController();
         MessageHandler messageHandler = new MessageHandler(mongoHandler);
-        MqttReceiver mqttReceiver = new MqttReceiver(messageHandler);
+        MqttReceiver mqttReceiver = new MqttReceiver(messageHandler, alertController);
         mqttReceiver.start();
     }
 }
