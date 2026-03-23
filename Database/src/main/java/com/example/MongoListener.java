@@ -8,6 +8,9 @@ import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Date;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 public class MongoListener {
     MongoDatabase database;
@@ -24,6 +27,17 @@ public class MongoListener {
         collectionL = database.getCollection("Locations");
         collectionS = database.getCollection("Subscriptions");
         collectionR = database.getCollection("Recipients");
+    }
+
+    private String formatLastUpdated(Object createdAt) {
+        if (createdAt == null) {
+            return null;
+        }
+        if (createdAt instanceof Date) {
+            Instant instant = ((Date) createdAt).toInstant();
+            return DateTimeFormatter.ISO_INSTANT.format(instant);
+        }
+        return createdAt.toString();
     }
 
     public ArrayList<Document> getContainers() {
@@ -45,7 +59,7 @@ public class MongoListener {
                     .append("name", document.get("name").toString())
                     .append("location", locationData.get("address").toString())
                     .append("fillPercentage", measurementDocument.get("fill_level"))
-                    .append("lastUpdated", measurementDocument.get("created_at").toString());
+                    .append("lastUpdated", formatLastUpdated(measurementDocument.get("created_at")));
                 containerData.add(doc);
             }
             else  containerData.add(null);

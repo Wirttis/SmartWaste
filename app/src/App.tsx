@@ -1,21 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TrashContainerCard } from "./components/TrashContainerCard";
 import { StatCard } from "./components/StatCard";
+
 import type {
 	ContainerFilter,
 	ContainerSort,
 	TrashContainer,
 } from "./types/trash";
+
 import { getContainers } from "./api/ContainerApi";
-// Mock data for trash containers
 
 export default function App() {
 	const [filterType, setFilterType] = useState<ContainerFilter>("all");
 	const [sortBy, setSortBy] = useState<ContainerSort>("fill-desc");
 
 	const [containers, setContainers] = useState<TrashContainer[]>([]);
-	
-	const loadContainers = async () => {
+
+	const loadContainers = useCallback(async () => {
 		try {
 			const apiData = await getContainers();
 
@@ -25,20 +26,33 @@ export default function App() {
 					name: c.name,
 					location: c.location,
 					fillPercentage: c.fillPercentage,
-					lastUpdated: c.lastUpdated,
+					lastUpdated: new Date(c.lastUpdated),
 					type: c.type,
 				}),
 			);
-			console.log("Mapped: ", mapped)
 			setContainers(mapped);
 		} catch (error) {
 			console.error("Failed to load containers", error);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
+		// Refresh on mount, then every 10 seconds
 		loadContainers();
-	}, []);
+
+		let isRunning = false;
+		const interval = setInterval(async () => {
+			if (isRunning) return;
+			isRunning = true;
+			try {
+				await loadContainers();
+			} finally {
+				isRunning = false;
+			}
+		}, 10000);
+
+		return () => clearInterval(interval);
+	}, [loadContainers]);
 
 	const filterValues: readonly ContainerFilter[] = [
 		"all",
@@ -107,9 +121,7 @@ export default function App() {
 				<div className="dashboard-container dashboard-header-inner">
 					<div className="dashboard-title-wrap">
 						<div>
-							<h1 className="dashboard-title">
-								Trash Container Tracker
-							</h1>
+							<h1 className="dashboard-title">SmartWaste</h1>
 							<p className="dashboard-subtitle">
 								Real-time monitoring and management system
 							</p>
@@ -122,19 +134,19 @@ export default function App() {
 				{/* Statistics Cards */}
 				<div className="stats-grid">
 					<StatCard
-						title="Total Containers"
-						value={totalContainers}
-					/>
-					<StatCard
 						title="Critical Level"
 						value={criticalContainers}
 						subtitle="≥ 80% full"
 					/>
-					<StatCard title="Average Fill" value={`${averageFill}%`} />
 					<StatCard
 						title="Needs Collection"
 						value={needsCollection}
 						subtitle="≥ 60% full"
+					/>
+					<StatCard title="Average Fill" value={`${averageFill}%`} />
+					<StatCard
+						title="Total Containers"
+						value={totalContainers}
 					/>
 				</div>
 
@@ -147,7 +159,6 @@ export default function App() {
 							aria-label="Fill level filters"
 						>
 							{[
-								{ value: "update", label: "Update" },
 								{ value: "all", label: "All" },
 								{ value: "critical", label: "Critical" },
 								{ value: "warning", label: "Warning" },
@@ -158,11 +169,7 @@ export default function App() {
 									type="button"
 									className={`filter-tab ${filterType === tab.value ? "active" : ""}`}
 									onClick={() => {
-										if (tab.value === "update") {
-											loadContainers();
-										} else {
-											handleFilterChange(tab.value);
-										}
+										handleFilterChange(tab.value);
 									}}
 								>
 									{tab.label}
