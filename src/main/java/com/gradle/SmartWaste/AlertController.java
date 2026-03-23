@@ -23,12 +23,14 @@ public class AlertController implements MessageInterface {
 
     public void doAlert(Document container, Document measurement) {
 
-        Document recipient = mongoListener.getContainerRecipient(container);
+        ArrayList<Document> recipients = mongoListener.getContainerRecipients(container);
         Document location = mongoListener.getLocationById(container.getInteger("location_id"));
         // TODO create message
         String message = "Jätesäiliö paikassa " + location.get("site_name")+ "vaatii tyhjennystä.\nTäyttösaste = " + measurement.get("fill_level") +
                 "\n aikaan" + LocalDateTime.now(ZoneId.of("UTC+2"));
-        EmailSender.sendEmail(recipient.getString("email"), "Tyhjennystilaus", message);
+        for (Document recipient : recipients) {
+            EmailSender.sendEmail(recipient.getString("email"), "Tyhjennystilaus", message);
+        }
     }
 
     public boolean getAlertFlag(Document document) {
