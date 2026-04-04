@@ -1,230 +1,50 @@
-import { useState, useEffect, useCallback } from "react";
-import { TrashContainerCard } from "./components/TrashContainerCard";
-import { StatCard } from "./components/StatCard";
+import { useState } from "react";
+import { Login } from "./login/login";
 
-import type {
-	ContainerFilter,
-	ContainerSort,
-	TrashContainer,
-} from "./types/trash";
+import { DashboardHeader } from "./components/DashboardHeader";
+import { StatsSection } from "./components/StatsSection";
+import { ControlsPanel } from "./components/ControlsPanel";
+import { ContainerGrid } from "./components/ContainerGrid";
 
-import { getContainers } from "./api/ContainerApi";
+import { useContainers } from "./hooks/useContainers";
+import { useContainerView } from "./hooks/useContainerView";
 
 export default function App() {
-	const [filterType, setFilterType] = useState<ContainerFilter>("all");
-	const [sortBy, setSortBy] = useState<ContainerSort>("fill-desc");
-
-	const [containers, setContainers] = useState<TrashContainer[]>([]);
-
-	const loadContainers = useCallback(async () => {
-		try {
-			const apiData = await getContainers();
-
-			const mapped: TrashContainer[] = apiData.map(
-				(c: TrashContainer) => ({
-					id: c.id,
-					name: c.name,
-					location: c.location,
-					fillPercentage: c.fillPercentage,
-					lastUpdated: new Date(c.lastUpdated),
-					type: c.type,
-				}),
-			);
-			setContainers(mapped);
-		} catch (error) {
-			console.error("Failed to load containers", error);
-		}
-	}, []);
-
-	useEffect(() => {
-		// Refresh on mount, then every 10 seconds
-		loadContainers();
-
-		let isRunning = false;
-		const interval = setInterval(async () => {
-			if (isRunning) return;
-			isRunning = true;
-			try {
-				await loadContainers();
-			} finally {
-				isRunning = false;
-			}
-		}, 10000);
-
-		return () => clearInterval(interval);
-	}, [loadContainers]);
-
-	const filterValues: readonly ContainerFilter[] = [
-		"all",
-		"critical",
-		"warning",
-		"normal",
-		"general",
-		"recycling",
-		"organic",
-	];
-	const sortValues: readonly ContainerSort[] = [
-		"fill-desc",
-		"fill-asc",
-		"name",
-	];
-
-	const handleFilterChange = (value: string) => {
-		if (filterValues.includes(value as ContainerFilter)) {
-			setFilterType(value as ContainerFilter);
-		}
-	};
-
-	const handleSortChange = (value: string) => {
-		if (sortValues.includes(value as ContainerSort)) {
-			setSortBy(value as ContainerSort);
-		}
-	};
-
-	// Calculate statistics
-	const totalContainers = containers.length;
-	const criticalContainers = containers.filter(
-		(c) => c.fillPercentage >= 80,
-	).length;
-	const averageFill = Math.round(
-		containers.reduce((sum, c) => sum + c.fillPercentage, 0) /
-			totalContainers,
+	const [isLoggedIn, setIsLoggedIn] = useState(
+		localStorage.getItem("auth") === "true"
 	);
-	const needsCollection = containers.filter(
-		(c) => c.fillPercentage >= 60,
-	).length;
 
-	// Filter containers
-	const filteredContainers = containers.filter((container) => {
-		if (filterType === "all") return true;
-		if (filterType === "critical") return container.fillPercentage >= 80;
-		if (filterType === "warning")
-			return (
-				container.fillPercentage >= 60 && container.fillPercentage < 80
-			);
-		if (filterType === "normal") return container.fillPercentage < 60;
-		return container.type === filterType;
-	});
+	const handleLogin = () => setIsLoggedIn(true);
 
-	// Sort containers
-	const sortedContainers = [...filteredContainers].sort((a, b) => {
-		if (sortBy === "fill-desc") return b.fillPercentage - a.fillPercentage;
-		if (sortBy === "fill-asc") return a.fillPercentage - b.fillPercentage;
-		if (sortBy === "name") return a.name.localeCompare(b.name);
-		return 0;
-	});
+	if (!isLoggedIn) {
+		return <Login onLogin={handleLogin} />;
+	}
+
+	const containers = useContainers(isLoggedIn);
+
+	const {
+		filterType,
+		sortBy,
+		handleFilterChange,
+		handleSortChange,
+		containers: visibleContainers,
+	} = useContainerView(containers);
 
 	return (
 		<div className="dashboard-page">
-			{/* Header */}
-			<div className="dashboard-header">
-				<div className="dashboard-container dashboard-header-inner">
-					<div className="dashboard-title-wrap">
-						<div>
-							<h1 className="dashboard-title">SmartWaste</h1>
-							<p className="dashboard-subtitle">
-								Real-time monitoring and management system
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
+			<DashboardHeader />
 
 			<div className="dashboard-container dashboard-main">
-				{/* Statistics Cards */}
-				<div className="stats-grid">
-					<StatCard
-						title="Critical Level"
-						value={criticalContainers}
-						subtitle="≥ 80% full"
-					/>
-					<StatCard
-						title="Needs Collection"
-						value={needsCollection}
-						subtitle="≥ 60% full"
-					/>
-					<StatCard title="Average Fill" value={`${averageFill}%`} />
-					<StatCard
-						title="Total Containers"
-						value={totalContainers}
-					/>
-				</div>
+				<StatsSection containers={containers} />
 
-				{/* Filters and Controls */}
-				<div className="panel controls-panel">
-					<div className="controls-row">
-						<div
-							className="filter-tabs"
-							role="tablist"
-							aria-label="Fill level filters"
-						>
-							{[
-								{ value: "all", label: "All" },
-								{ value: "critical", label: "Critical" },
-								{ value: "warning", label: "Warning" },
-								{ value: "normal", label: "Normal" },
-							].map((tab) => (
-								<button
-									key={tab.value}
-									type="button"
-									className={`filter-tab ${filterType === tab.value ? "active" : ""}`}
-									onClick={() => {
-										handleFilterChange(tab.value);
-									}}
-								>
-									{tab.label}
-								</button>
-							))}
-						</div>
+				<ControlsPanel
+					filterType={filterType}
+					sortBy={sortBy}
+					onFilterChange={handleFilterChange}
+					onSortChange={handleSortChange}
+				/>
 
-						<div className="control-selects">
-							<select
-								className="control-select"
-								value={filterType}
-								onChange={(event) =>
-									handleFilterChange(event.target.value)
-								}
-							>
-								<option value="all">All Types</option>
-								<option value="general">General</option>
-								<option value="recycling">Recycling</option>
-								<option value="organic">Organic</option>
-							</select>
-
-							<select
-								className="control-select"
-								value={sortBy}
-								onChange={(event) =>
-									handleSortChange(event.target.value)
-								}
-							>
-								<option value="fill-desc">
-									Fill % (High to Low)
-								</option>
-								<option value="fill-asc">
-									Fill % (Low to High)
-								</option>
-								<option value="name">Name (A-Z)</option>
-							</select>
-						</div>
-					</div>
-				</div>
-
-				{/* Container Grid */}
-				<div className="containers-grid">
-					{sortedContainers.map((container) => (
-						<TrashContainerCard
-							key={container.id}
-							container={container}
-						/>
-					))}
-				</div>
-
-				{sortedContainers.length === 0 && (
-					<div className="empty-state">
-						<p>No containers match the selected filters</p>
-					</div>
-				)}
+				<ContainerGrid containers={visibleContainers} />
 			</div>
 		</div>
 	);
