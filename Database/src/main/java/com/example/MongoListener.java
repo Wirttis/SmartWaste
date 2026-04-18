@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -82,5 +83,16 @@ public class MongoListener {
             }
         });
         return recipients;
+    }
+    public ArrayList<Document> getSubscribers() {
+        ArrayList<Document> subscribers = new ArrayList<>();
+        FindIterable<Document> docs = collectionR.find();
+        docs.forEach(subscribers::add);
+        return subscribers;
+    }
+
+    public void addSubscriber(Document subscriber) {
+        InsertOneResult result = collectionR.insertOne(subscriber);
+        System.out.println("Inserted document id - insert many: " + result.getInsertedId());
     }
 }
