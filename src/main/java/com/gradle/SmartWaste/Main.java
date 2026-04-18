@@ -11,12 +11,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Main {
     static MongoHandler mongoHandler;
     public static void main(String[] args) throws MqttException {
-        SpringApplication.run(Main.class, args);
         mongoHandler = new MongoHandler();
         mongoHandler.connect();
         AlertController alertController = new AlertController();
         MessageHandler messageHandler = new MessageHandler(mongoHandler);
         MqttReceiver mqttReceiver = new MqttReceiver(messageHandler, alertController);
         mqttReceiver.start();
+        SpringApplication.run(Main.class, args);
     }
 }
