@@ -9,10 +9,15 @@ import { ContainerGrid } from "./components/ContainerGrid";
 import { useContainers } from "./hooks/useContainers";
 import { useContainerView } from "./hooks/useContainerView";
 
+// @ts-ignore
+import { Map } from './map/map.tsx';
+
 export default function App() {
 	const [isLoggedIn, setIsLoggedIn] = useState(
 		localStorage.getItem("auth") === "true"
 	);
+
+	const [selectedId, setSelectedId] = useState<string | null>(null);
 
 	const handleLogin = () => setIsLoggedIn(true);
 
@@ -44,7 +49,9 @@ export default function App() {
 					onSortChange={handleSortChange}
 				/>
 
-				<ContainerGrid containers={visibleContainers} />
+				<ContainerGrid containers={visibleContainers} selectedId={selectedId} />
+				<Map containers={containers} selectedId={selectedId} onSelect={setSelectedId} />
+
 			</div>
 		</div>
 	);

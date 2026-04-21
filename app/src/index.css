@@ -167,6 +167,11 @@ body {
 	padding: 16px;
 }
 
+.container-card.selected {
+	border: 3px solid #ffff00;
+	box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+}
+
 .container-top-row {
 	display: flex;
 	align-items: flex-start;

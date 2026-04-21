@@ -2,9 +2,10 @@ import type { TrashContainer } from "../types/trash";
 
 interface TrashContainerCardProps {
 	container: TrashContainer;
+	isSelected?: boolean;
 }
 
-export function TrashContainerCard({ container }: TrashContainerCardProps) {
+export function TrashContainerCard({ container, isSelected }: TrashContainerCardProps) {
 	const getStatusColor = (fillPercentage: number) => {
 		if (fillPercentage >= 80) return "critical";
 		if (fillPercentage >= 60) return "warning";
@@ -37,7 +38,7 @@ export function TrashContainerCard({ container }: TrashContainerCardProps) {
 	const typeIcon = getTypeIcon();
 
 	return (
-		<div className="panel container-card">
+		<div className={`panel container-card ${isSelected ? "selected" : ""}`}>
 			<div className="container-top-row">
 				<div>
 					<h3 className="container-title">

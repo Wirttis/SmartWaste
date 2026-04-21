@@ -7,6 +7,8 @@ export interface TrashContainer {
 	fillPercentage: number;
 	lastUpdated: Date;
 	type: TrashType;
+	latitude: number;
+	longitude: number;
 }
 
 export type ContainerFilter =
