@@ -3,9 +3,10 @@ import type { TrashContainer } from "../types/trash";
 
 type Props = {
     containers: TrashContainer[];
+    selectedId: string | null;
 };
 
-export function ContainerGrid({ containers }: Props) {
+export function ContainerGrid({ containers, selectedId }: Props) {
     if (containers.length === 0) {
         return (
             <div className="empty-state">
@@ -17,7 +18,7 @@ export function ContainerGrid({ containers }: Props) {
     return (
         <div className="containers-grid">
             {containers.map((container) => (
-                <TrashContainerCard key={container.id} container={container} />
+                <TrashContainerCard key={container.id} container={container} isSelected={selectedId === container.id} />
             ))}
         </div>
     );

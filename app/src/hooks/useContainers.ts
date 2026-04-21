@@ -17,6 +17,8 @@ export function useContainers(isLoggedIn: boolean) {
                     fillPercentage: c.fillPercentage,
                     lastUpdated: new Date(c.lastUpdated),
                     type: c.type,
+                    latitude: c.latitude,
+                    longitude: c.longitude,
                 })
             );
 
