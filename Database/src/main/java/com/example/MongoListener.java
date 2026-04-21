@@ -8,6 +8,9 @@ import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import javax.print.Doc;
+
 import java.util.Date;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -53,13 +56,17 @@ public class MongoListener {
         docs.forEach(document -> {
             Document measurementDocument = collectionM.find().filter(Filters.eq("bin_id",document.get("location_id"))).sort(Sorts.descending("created_at")).first();
             Document locationData = collectionL.find().filter(Filters.eq("_id",document.get("location_id"))).first();
+            
             if (measurementDocument != null && locationData != null) {
                 Document doc = new Document();
                 doc.append("id", document.get("location_id").toString())
                     .append("name", document.get("name").toString())
                     .append("location", locationData.get("address").toString())
                     .append("fillPercentage", measurementDocument.get("fill_level"))
-                    .append("lastUpdated", formatLastUpdated(measurementDocument.get("created_at")));
+                    .append("lastUpdated", formatLastUpdated(measurementDocument.get("created_at")))
+                    .append("latitude", document.get("latitude"))
+                    .append("longitude", document.get("longitude"));
+
                 containerData.add(doc);
             }
             else  containerData.add(null);
