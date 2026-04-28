@@ -1,0 +1,19 @@
+.marker-default .marker-inner {
+    width: 25px;
+    height: 41px;
+    background-color: #3388ff;
+    border-radius: 50% 50% 50% 0;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: rotate(-45deg);
+}
+
+.marker-selected .marker-inner {
+    width: 25px;
+    height: 41px;
+    background-color: #3388ff;
+    border-radius: 50% 50% 50% 0;
+    border: 3px solid #ffff00;
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.8), 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: rotate(-45deg);
+}

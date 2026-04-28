@@ -7,6 +7,10 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import javax.print.Doc;
+
 import java.util.Date;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -16,12 +20,16 @@ public class MongoListener {
     MongoCollection<Document> collectionM;
     MongoCollection<Document> collectionC;
     MongoCollection<Document> collectionL;
+    MongoCollection<Document> collectionR;
+    MongoCollection<Document> collectionS;
 
     public MongoListener(MongoHandler mongoHandler) {
         database = mongoHandler.getDatabase();
         collectionM = database.getCollection("Measurements");
         collectionC = database.getCollection("Containers");
         collectionL = database.getCollection("Locations");
+        collectionS = database.getCollection("Subscriptions");
+        collectionR = database.getCollection("Recipients");
     }
 
     private String formatLastUpdated(Object createdAt) {
@@ -48,17 +56,38 @@ public class MongoListener {
         docs.forEach(document -> {
             Document measurementDocument = collectionM.find().filter(Filters.eq("bin_id",document.get("location_id"))).sort(Sorts.descending("created_at")).first();
             Document locationData = collectionL.find().filter(Filters.eq("_id",document.get("location_id"))).first();
+            
             if (measurementDocument != null && locationData != null) {
                 Document doc = new Document();
                 doc.append("id", document.get("location_id").toString())
                     .append("name", document.get("name").toString())
                     .append("location", locationData.get("address").toString())
                     .append("fillPercentage", measurementDocument.get("fill_level"))
-                    .append("lastUpdated", formatLastUpdated(measurementDocument.get("created_at")));
+                    .append("lastUpdated", formatLastUpdated(measurementDocument.get("created_at")))
+                    .append("latitude", document.get("latitude"))
+                    .append("longitude", document.get("longitude"));
+
                 containerData.add(doc);
             }
             else  containerData.add(null);
         });
         return containerData;
+    }
+    public Document getContainerById(int id) {
+        return collectionC.find(Filters.eq("location_id",id)).first();
+    }
+    public Document getLocationById(int id) {
+        return collectionL.find(Filters.eq("_id",id)).first();
+    }
+    public ArrayList<Document> getContainerRecipients(Document container) {
+        FindIterable<Document> subsciptions = collectionS.find(Filters.eq("container_id",container.get("_id")));
+        ArrayList<Document> recipients = new ArrayList<>();
+        subsciptions.forEach(subsciption -> {
+            if(Objects.equals(subsciption.get("status").toString(), "active")) {
+                Document recipient = collectionR.find(Filters.eq("_id", subsciption.get("recipient_id"))).first();
+                recipients.add(recipient);
+            }
+        });
+        return recipients;
     }
 }
