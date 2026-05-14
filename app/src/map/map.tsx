@@ -47,7 +47,9 @@ export function Map({ containers, selectedId, onSelect }: Props) {
 						}}
 					>
 						<Popup>
-							<div style={{ width: 250 }}>{container.name}</div>
+							<div style={{ width: 250 }}>
+								{container.location}
+							</div>
 						</Popup>
 					</Marker>
 				))}
